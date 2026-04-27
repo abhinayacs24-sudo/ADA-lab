@@ -1,0 +1,92 @@
+#include <stdio.h>
+
+#define LEFT 0
+#define RIGHT 1
+
+// Function to print permutation
+void printPermutation(int perm[], int n) {
+    for (int i = 0; i < n; i++)
+        printf("%d ", perm[i]);
+    printf("\n");
+}
+
+// Find the largest mobile element
+int getMobile(int perm[], int dir[], int n) {
+    int mobile = 0, mobile_index = -1;
+
+    for (int i = 0; i < n; i++) {
+        if (dir[i] == LEFT && i != 0 && perm[i] > perm[i - 1]) {
+            if (perm[i] > mobile) {
+                mobile = perm[i];
+                mobile_index = i;
+            }
+        }
+        if (dir[i] == RIGHT && i != n - 1 && perm[i] > perm[i + 1]) {
+            if (perm[i] > mobile) {
+                mobile = perm[i];
+                mobile_index = i;
+            }
+        }
+    }
+    return mobile_index;
+}
+
+// Generate permutations
+void johnsonTrotter(int n) {
+    int perm[n], dir[n];
+
+    // Initialize permutation and directions
+    for (int i = 0; i < n; i++) {
+        perm[i] = i + 1;
+        dir[i] = LEFT;
+    }
+
+    printPermutation(perm, n);
+
+    while (1) {
+        int mobile_index = getMobile(perm, dir, n);
+
+        if (mobile_index == -1)
+            break;
+
+        int swap_with;
+
+        // Determine swap index
+        if (dir[mobile_index] == LEFT)
+            swap_with = mobile_index - 1;
+        else
+            swap_with = mobile_index + 1;
+
+        // Swap elements
+        int temp = perm[mobile_index];
+        perm[mobile_index] = perm[swap_with];
+        perm[swap_with] = temp;
+
+        // Swap directions as well
+        int temp_dir = dir[mobile_index];
+        dir[mobile_index] = dir[swap_with];
+        dir[swap_with] = temp_dir;
+
+        int mobile = perm[swap_with];
+
+        // Reverse direction of elements greater than mobile
+        for (int i = 0; i < n; i++) {
+            if (perm[i] > mobile) {
+                dir[i] = !dir[i];
+            }
+        }
+
+        printPermutation(perm, n);
+    }
+}
+
+int main() {
+    int n;
+
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+
+    johnsonTrotter(n);
+
+    return 0;
+}
